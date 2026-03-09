@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --accent: #E3120B;
+  --cream: #FAFAF8;
+  --navy: #1a1a2e;
+}
+
+body {
+  background-color: var(--cream);
+  color: #1a1a1a;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-track {
+  animation: ticker 40s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes pulse-ring {
+  0% { r: 6; opacity: 0.7; }
+  100% { r: 20; opacity: 0; }
+}
+
+.conflict-pulse {
+  animation: pulse-ring 2s ease-out infinite;
+}
