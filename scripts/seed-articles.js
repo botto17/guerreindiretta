@@ -7,10 +7,10 @@ const supabase = createClient(
 
 function slugify(text) {
   return text.toLowerCase()
-    .replace(/[àáâã]/g,'a').replace(/[èéêë]/g,'e').replace(/[ìíîï]/g,'i')
-    .replace(/[òóôõ]/g,'o').replace(/[ùúûü]/g,'u')
-    .replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-')
-    .slice(0,80).replace(/-$/,'');
+    .replace(/[àáâã]/g, 'a').replace(/[èéêë]/g, 'e').replace(/[ìíîï]/g, 'i')
+    .replace(/[òóôõ]/g, 'o').replace(/[ùúûü]/g, 'u')
+    .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-')
+    .slice(0, 80).replace(/-$/, '');
 }
 
 // Unsplash images per conflict theme
@@ -41,9 +41,9 @@ const imagePool = {
     'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1200&h=630&fit=crop',
   ],
   '_default': [
-    'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&h=630&fit=crop',
+    'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1200&h=630&fit=crop',
+    'https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?w=1200&h=630&fit=crop',
+    'https://images.unsplash.com/photo-1580128637471-1339ce9ca3fa?w=1200&h=630&fit=crop',
   ]
 };
 
