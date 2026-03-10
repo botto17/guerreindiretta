@@ -51,6 +51,7 @@ export type NewsItem = {
   title: string
   excerpt: string
   url: string
+  image_url: string | null
   published_at: string
   fetched_at: string
   curated: boolean
@@ -65,6 +66,7 @@ export type Article = {
   subtitle: string | null
   body: string
   sources: string[]
+  image_url: string | null
   published_at: string
   slug: string
   conflicts?: {

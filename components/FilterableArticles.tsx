@@ -20,6 +20,7 @@ type ArticleData = {
     subtitle: string | null
     body: string
     slug: string
+    image_url: string | null
     published_at: string
     conflict_id: string
     conflicts?: {
@@ -27,7 +28,7 @@ type ArticleData = {
         color: string
         slug: string
         intensity: string
-    } | null
+    }
 }
 
 type Props = {
@@ -75,7 +76,7 @@ export default function FilterableArticles({ conflicts, articles }: Props) {
                                 <Link href={`/articoli/${article.slug}`} className="block mb-4 overflow-hidden">
                                     <div className="relative w-full aspect-[16/9] bg-gray-100">
                                         <img
-                                            src={getArticleImage(article.conflicts?.slug, article.title)}
+                                            src={article.image_url || getArticleImage(article.conflicts?.slug, article.title)}
                                             alt={article.title}
                                             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                                         />

@@ -7,13 +7,15 @@ const anthropic = new Anthropic({
 
 const ARTICLE_SYSTEM_PROMPT = `Sei un giornalista geopolitico senior per una rivista italiana di alto livello, tipo Limes o Internazionale. Ti vengono date le ultime notizie da fonti internazionali su un conflitto. Il tuo compito:
 1. Analizza le notizie e identifica i fatti più importanti
-2. Scrivi UN articolo originale in italiano (300-600 parole) che sintetizza la situazione attuale
+2. Scrivi UN articolo originale rigorosamente in ITALIANO (300-600 parole) che sintetizza la situazione attuale. TRADUCI tutto dall'inglese, non lasciare termini in inglese se non nomi propri.
 3. L'articolo deve essere analitico, non un semplice riassunto. Dai contesto, spiega le implicazioni, collega i fatti
 4. Tono: autorevole, lucido, niente sensazionalismo
-5. Rispondi con JSON: { "title": "...", "subtitle": "...", "body": "... (markdown)", "sources": ["url1", "url2", ...] }
+5. Scegli l'URL dell'immagine migliore tra quelle fornite nelle notizie (se presente), altrimenti lascia null
+6. Rispondi con JSON: { "title": "...", "subtitle": "...", "body": "... (markdown)", "image_url": "url_o_null", "sources": ["url1", "url2", ...] }
 Se le notizie non contengono novità significative, rispondi con { "skip": true }`
 
-const SUMMARY_SYSTEM_PROMPT = `Sei un analista geopolitico senior. Ti viene dato il sommario attuale di un conflitto e le ultime notizie. Aggiorna il sommario integrando le nuove informazioni. Mantieni il tono analitico e autorevole. Il sommario deve dare a un lettore un quadro completo della situazione attuale in 500-1000 parole in italiano.
+const SUMMARY_SYSTEM_PROMPT = `Sei un analista geopolitico senior. Ti viene dato il sommario attuale di un conflitto e le ultime notizie. Aggiorna il sommario integrando le nuove informazioni. 
+DEVI RISPONDERE RIGOROSAMENTE IN ITALIANO. Traduci ogni concetto o citazione dall'inglese all'italiano. Mantieni il tono analitico e autorevole. Il sommario deve dare a un lettore un quadro completo della situazione attuale in 500-1000 parole in italiano.
 
 Aggiorna anche i key_facts JSON con la struttura:
 { "parties": ["..."], "startDate": "...", "region": "...", "estimatedCasualties": "...", "internationalActors": ["..."], "latestDevelopment": "..." }
@@ -60,7 +62,7 @@ export async function curateArticles(): Promise<{
       // Get unprocessed news for this conflict
       const { data: newsItems } = await supabaseAdmin
         .from('news_items')
-        .select('id, title, excerpt, url, published_at')
+        .select('id, title, excerpt, url, image_url, published_at')
         .eq('conflict_id', conflict.id)
         .eq('curated', false)
         .order('published_at', { ascending: false })
@@ -72,7 +74,7 @@ export async function curateArticles(): Promise<{
 
       // Format news for Claude
       const newsText = newsItems
-        .map((n, i) => `[${i + 1}] ${n.title}\n${n.excerpt || ''}\nURL: ${n.url}\nData: ${n.published_at}`)
+        .map((n, i) => `[${i + 1}] ${n.title}\n${n.excerpt || ''}\nURL: ${n.url}\nImmagine: ${n.image_url || 'null'}\nData: ${n.published_at}`)
         .join('\n\n---\n\n')
 
       // --- Generate article ---
@@ -87,7 +89,7 @@ export async function curateArticles(): Promise<{
       })
 
       const articleText = articleResponse.content[0].type === 'text' ? articleResponse.content[0].text : ''
-      
+
       // Parse JSON - handle potential markdown code blocks
       let articleJson
       try {
@@ -117,6 +119,7 @@ export async function curateArticles(): Promise<{
           title: articleJson.title,
           subtitle: articleJson.subtitle || null,
           body: articleJson.body,
+          image_url: articleJson.image_url || null,
           sources: articleJson.sources || [],
           slug,
         })
@@ -146,7 +149,7 @@ export async function curateArticles(): Promise<{
       })
 
       const summaryText = summaryResponse.content[0].type === 'text' ? summaryResponse.content[0].text : ''
-      
+
       let summaryJson
       try {
         const cleaned = summaryText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()

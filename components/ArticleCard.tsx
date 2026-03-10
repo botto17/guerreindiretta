@@ -11,6 +11,7 @@ type Article = {
   title: string
   subtitle: string | null
   body: string
+  image_url: string | null
   published_at: string
   conflicts?: {
     name: string
@@ -34,7 +35,7 @@ function estimateReadingTime(body: string): number {
 export default function ArticleCard({ article, featured = false, showImage = false }: Props) {
   const date = format(new Date(article.published_at), 'd MMMM yyyy', { locale: it })
   const readTime = estimateReadingTime(article.body)
-  const imageUrl = getArticleImage(article.conflicts?.slug, article.title)
+  const imageUrl = article.image_url || getArticleImage(article.conflicts?.slug, article.title)
 
   return (
     <article className={`border-b border-gray-200 ${featured ? 'pb-6 mb-6' : 'pb-4 mb-4'}`}>

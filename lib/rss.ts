@@ -7,6 +7,11 @@ const parser = new Parser({
   headers: {
     'User-Agent': 'GuerreIndiretta/1.0 (+https://guerreindiretta.com)',
   },
+  customFields: {
+    item: [
+      ['media:content', 'media:content']
+    ],
+  },
 })
 
 export async function fetchAllFeeds(): Promise<{ ok: number; errors: number }> {
@@ -37,6 +42,13 @@ export async function fetchAllFeeds(): Promise<{ ok: number; errors: number }> {
           ? new Date(item.pubDate).toISOString()
           : new Date().toISOString()
 
+        let image_url: string | undefined
+        if (item.enclosure?.url) {
+          image_url = item.enclosure.url
+        } else if (item['media:content']?.['$']?.url) {
+          image_url = item['media:content']['$'].url
+        }
+
         const conflict_id = await classifyNews(title, excerpt.slice(0, 500))
 
         await supabaseAdmin
@@ -48,6 +60,7 @@ export async function fetchAllFeeds(): Promise<{ ok: number; errors: number }> {
               title: title.slice(0, 500),
               excerpt: excerpt.slice(0, 1000),
               url,
+              image_url,
               published_at,
             },
             { onConflict: 'url', ignoreDuplicates: true }
