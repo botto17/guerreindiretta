@@ -43,7 +43,7 @@ const imagePool = {
   '_default': [
     'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1200&h=630&fit=crop',
     'https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1580128637471-1339ce9ca3fa?w=1200&h=630&fit=crop',
+    'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1200&h=630&fit=crop',
   ]
 };
 

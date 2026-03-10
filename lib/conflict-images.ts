@@ -61,7 +61,7 @@ const conflictImages: Record<string, string[]> = {
   '_default': [
     'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800&h=450&fit=crop&q=80',  // UN flags
     'https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?w=800&h=450&fit=crop&q=80',  // Government meeting
-    'https://images.unsplash.com/photo-1580128637471-1339ce9ca3fa?w=800&h=450&fit=crop&q=80',  // Capitol/Diplomatic building
+    'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800&h=450&fit=crop&q=80',  // Capitol/Diplomatic building
   ],
 }
 

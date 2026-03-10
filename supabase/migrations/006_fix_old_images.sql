@@ -14,5 +14,5 @@ WHERE image_url LIKE '%1526374965328%';
 
 -- Sostituisci l'immagine del Colosseo e dell'Africa con il palazzo diplomatico
 UPDATE articles
-SET image_url = 'https://images.unsplash.com/photo-1580128637471-1339ce9ca3fa?w=1200&h=630&fit=crop'
+SET image_url = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1200&h=630&fit=crop'
 WHERE image_url LIKE '%1504384308090%' OR image_url LIKE '%1523365280197%';

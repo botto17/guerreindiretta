@@ -28,7 +28,7 @@ async function fix() {
                 newUrl = 'https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?w=1200&h=630&fit=crop';
                 changed = true;
             } else if (newUrl.includes('1504384308090') || newUrl.includes('1523365280197')) {
-                newUrl = 'https://images.unsplash.com/photo-1580128637471-1339ce9ca3fa?w=1200&h=630&fit=crop';
+                newUrl = 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1200&h=630&fit=crop';
                 changed = true;
             }
 
