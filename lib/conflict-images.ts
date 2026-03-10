@@ -59,9 +59,9 @@ const conflictImages: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1518639192441-8fce0a366e2e?w=800&h=450&fit=crop&q=80',  // middle east city
   ],
   '_default': [
-    'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=450&fit=crop&q=80',  // globe
-    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&h=450&fit=crop&q=80',  // data
-    'https://images.unsplash.com/photo-1523365280197-f1783db9fe62?w=800&h=450&fit=crop&q=80',  // africa
+    'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800&h=450&fit=crop&q=80',  // UN flags
+    'https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?w=800&h=450&fit=crop&q=80',  // Government meeting
+    'https://images.unsplash.com/photo-1580128637471-1339ce9ca3fa?w=800&h=450&fit=crop&q=80',  // Capitol/Diplomatic building
   ],
 }
 
