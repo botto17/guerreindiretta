@@ -185,11 +185,13 @@ export default async function HomePage() {
                 Dalla guerra in Ucraina alle tensioni nel Pacifico, dall&apos;escalation in Medio Oriente alla crisi in Myanmar: 10 domande per scoprire se sei un vero esperto di conflitti internazionali.
               </p>
             </div>
-            <button
-              className="w-full bg-white text-accent font-sans text-sm font-bold px-6 py-3.5 hover:bg-red-50 transition-colors"
-            >
-              Inizia il quiz →
-            </button>
+            <Link href="/quiz" className="block w-full">
+              <button
+                className="w-full bg-white text-accent font-sans text-sm font-bold px-6 py-3.5 hover:bg-red-50 transition-colors"
+              >
+                Inizia il quiz →
+              </button>
+            </Link>
             <p className="text-[10px] font-sans text-red-200 mt-3">
               2 minuti · 10 domande · Risultato immediato
             </p>
