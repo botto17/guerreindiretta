@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import Header from '@/components/Header'
 
 export const metadata: Metadata = {
-  title: 'About — Guerre Indiretta',
-  description: 'Come funziona Guerre Indiretta.',
+  title: 'About — GuerreInDiretta',
+  description: 'Come funziona GuerreInDiretta.',
 }
 
 export default function AboutPage() {
@@ -17,7 +17,7 @@ export default function AboutPage() {
 
         <div className="prose prose-sm max-w-none font-sans text-gray-700 space-y-4">
           <p>
-            <strong className="font-serif">Guerre Indiretta</strong> è un aggregatore automatico di notizie
+            <strong className="font-serif">GuerreInDiretta</strong> è un aggregatore automatico di notizie
             sui conflitti armati e le crisi geopolitiche nel mondo.
           </p>
           <p>

@@ -3,8 +3,8 @@ import { supabase } from '@/lib/supabase'
 import Header from '@/components/Header'
 
 export const metadata: Metadata = {
-  title: 'Fonti — Guerre Indiretta',
-  description: 'Le fonti giornalistiche e di ricerca monitorate da Guerre Indiretta.',
+  title: 'Fonti — GuerreInDiretta',
+  description: 'Le fonti giornalistiche e di ricerca monitorate da GuerreInDiretta.',
 }
 
 export const revalidate = 3600

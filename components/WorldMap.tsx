@@ -1,140 +1,215 @@
+'use client'
+
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import Link from 'next/link'
-import { latLonToSvg } from '@/lib/geo'
+import { geoNaturalEarth1, geoPath, geoGraticule } from 'd3-geo'
+import { feature } from 'topojson-client'
+import type { FeatureCollection, Geometry } from 'geojson'
 import { Conflict } from '@/lib/supabase'
+
+/* Minimal TopoJSON types so we don't need @types/topojson-specification */
+interface TopoGeometryCollection {
+  type: 'GeometryCollection'
+  geometries: Array<{ type: string; arcs: number[][]; properties?: Record<string, unknown>; id?: string | number }>
+}
+interface Topology {
+  type: 'Topology'
+  objects: Record<string, TopoGeometryCollection>
+  arcs: number[][][]
+  [key: string]: unknown
+}
 
 type Props = {
   conflicts: Conflict[]
 }
 
+const WIDTH = 960
+const HEIGHT = 500
+
+const intensityLabels: Record<string, string> = {
+  alta: 'Alta Intensità',
+  media: 'Media Intensità',
+  tensione: 'Tensione',
+}
+
 export default function WorldMap({ conflicts }: Props) {
+  const [worldData, setWorldData] = useState<FeatureCollection<Geometry> | null>(null)
+  const [hovered, setHovered] = useState<{
+    conflict: Conflict
+    x: number
+    y: number
+  } | null>(null)
+  const svgRef = useRef<SVGSVGElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    fetch('/world-110m.json')
+      .then((res) => res.json())
+      .then((topology: Topology) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const countries = feature(topology as any, topology.objects.countries as any) as unknown as FeatureCollection<Geometry>
+        setWorldData(countries)
+      })
+      .catch((err) => console.error('Failed to load world map:', err))
+  }, [])
+
+  const projection = useMemo(
+    () =>
+      geoNaturalEarth1()
+        .scale(160)
+        .translate([WIDTH / 2, HEIGHT / 2]),
+    []
+  )
+
+  const pathGenerator = useMemo(() => geoPath(projection), [projection])
+  const graticule = useMemo(() => geoGraticule().step([20, 20])(), [])
+
+  // Project conflict coordinates
+  const projectedConflicts = useMemo(() => {
+    return conflicts.map((conflict) => {
+      const coords = projection([conflict.longitude, conflict.latitude])
+      return { conflict, x: coords?.[0] ?? 0, y: coords?.[1] ?? 0 }
+    })
+  }, [conflicts, projection])
+
+  // Convert SVG coords to screen coords for tooltip positioning
+  const getScreenCoords = useCallback((svgX: number, svgY: number) => {
+    if (!svgRef.current || !containerRef.current) return { left: 0, top: 0 }
+    const svg = svgRef.current
+    const container = containerRef.current
+    const containerRect = container.getBoundingClientRect()
+    const svgRect = svg.getBoundingClientRect()
+    // Scale factor from viewBox to rendered size
+    const scaleX = svgRect.width / WIDTH
+    const scaleY = svgRect.height / HEIGHT
+    return {
+      left: svgRect.left - containerRect.left + svgX * scaleX,
+      top: svgRect.top - containerRect.top + svgY * scaleY,
+    }
+  }, [])
+
   return (
-    <div className="w-full bg-navy rounded-sm overflow-hidden" id="mappa">
+    <div className="w-full overflow-hidden relative" id="mappa" ref={containerRef}>
       <svg
-        viewBox="0 0 1000 500"
+        ref={svgRef}
+        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-auto"
-        style={{ maxHeight: '50vh' }}
+        style={{ maxHeight: '50vh', background: '#eef0f2' }}
       >
         {/* Ocean background */}
-        <rect width="1000" height="500" fill="#1a1a2e" />
+        <rect width={WIDTH} height={HEIGHT} fill="#eef0f2" />
 
-        {/* Simplified world continents as paths */}
-        {/* North America */}
+        {/* Globe outline (sphere) */}
         <path
-          d="M 80 60 L 180 50 L 250 80 L 270 120 L 230 160 L 200 200 L 170 240 L 130 260 L 90 220 L 70 180 L 60 130 Z"
-          fill="#2d3561"
-          stroke="#3a4080"
+          d={pathGenerator({ type: 'Sphere' }) || ''}
+          fill="none"
+          stroke="#d4d8dc"
           strokeWidth="0.5"
         />
-        {/* Central America */}
-        <path d="M 170 240 L 200 260 L 185 280 L 165 270 Z" fill="#2d3561" stroke="#3a4080" strokeWidth="0.5" />
-        {/* South America */}
+
+        {/* Graticule (grid lines) */}
         <path
-          d="M 185 280 L 220 270 L 260 290 L 280 340 L 270 400 L 240 440 L 210 450 L 195 420 L 180 380 L 175 330 Z"
-          fill="#2d3561"
-          stroke="#3a4080"
-          strokeWidth="0.5"
+          d={pathGenerator(graticule) || ''}
+          fill="none"
+          stroke="#dde0e4"
+          strokeWidth="0.25"
         />
-        {/* Europe */}
-        <path
-          d="M 440 60 L 500 55 L 530 80 L 520 110 L 490 120 L 460 115 L 440 100 Z"
-          fill="#2d3561"
-          stroke="#3a4080"
-          strokeWidth="0.5"
-        />
-        {/* Scandinavia */}
-        <path d="M 470 30 L 510 25 L 520 55 L 490 60 L 460 55 Z" fill="#2d3561" stroke="#3a4080" strokeWidth="0.5" />
-        {/* Africa */}
-        <path
-          d="M 450 140 L 510 130 L 560 150 L 580 200 L 575 270 L 550 340 L 510 380 L 480 370 L 455 320 L 440 260 L 435 200 Z"
-          fill="#2d3561"
-          stroke="#3a4080"
-          strokeWidth="0.5"
-        />
-        {/* Middle East */}
-        <path
-          d="M 530 110 L 590 105 L 620 130 L 600 160 L 560 165 L 535 145 Z"
-          fill="#2d3561"
-          stroke="#3a4080"
-          strokeWidth="0.5"
-        />
-        {/* Russia / Central Asia */}
-        <path
-          d="M 520 30 L 700 20 L 780 50 L 750 100 L 680 110 L 620 100 L 560 95 L 530 80 Z"
-          fill="#2d3561"
-          stroke="#3a4080"
-          strokeWidth="0.5"
-        />
-        {/* South Asia */}
-        <path
-          d="M 620 130 L 680 120 L 720 140 L 710 190 L 670 210 L 640 200 L 620 170 Z"
-          fill="#2d3561"
-          stroke="#3a4080"
-          strokeWidth="0.5"
-        />
-        {/* East Asia */}
-        <path
-          d="M 720 60 L 800 55 L 840 80 L 830 130 L 790 150 L 750 140 L 720 120 L 710 90 Z"
-          fill="#2d3561"
-          stroke="#3a4080"
-          strokeWidth="0.5"
-        />
-        {/* Southeast Asia */}
-        <path
-          d="M 750 150 L 800 145 L 820 170 L 800 200 L 770 195 L 750 175 Z"
-          fill="#2d3561"
-          stroke="#3a4080"
-          strokeWidth="0.5"
-        />
-        {/* Australia */}
-        <path
-          d="M 770 280 L 850 270 L 890 300 L 880 360 L 840 380 L 790 370 L 765 330 Z"
-          fill="#2d3561"
-          stroke="#3a4080"
-          strokeWidth="0.5"
-        />
+
+        {/* Countries */}
+        {worldData?.features.map((feat, i) => (
+          <path
+            key={feat.id ?? i}
+            d={pathGenerator(feat) || ''}
+            fill="#cdd1d6"
+            stroke="#b8bdc4"
+            strokeWidth="0.4"
+          />
+        ))}
 
         {/* Conflict dots */}
-        {conflicts.map((conflict) => {
-          const { x, y } = latLonToSvg(conflict.latitude, conflict.longitude)
-          return (
-            <Link
-              key={conflict.id}
-              href={`/conflitti/${conflict.slug}`}
-              aria-label={conflict.name}
+        {projectedConflicts.map(({ conflict, x, y }) => (
+          <Link
+            key={conflict.id}
+            href={`/conflitti/${conflict.slug}`}
+            aria-label={conflict.name}
+          >
+            <g
+              className="cursor-pointer"
+              onMouseEnter={() => setHovered({ conflict, x, y })}
+              onMouseLeave={() => setHovered(null)}
             >
-              <g className="cursor-pointer">
-                <title>{conflict.name} — {conflict.intensity}</title>
-                {/* Pulse ring */}
-                <circle cx={x} cy={y} r="6" fill={conflict.color} opacity="0.3">
-                  <animate
-                    attributeName="r"
-                    from="6"
-                    to="20"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    from="0.5"
-                    to="0"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                </circle>
-                {/* Core dot */}
-                <circle
-                  cx={x}
-                  cy={y}
-                  r="5"
-                  fill={conflict.color}
-                  className="hover:r-7 transition-all"
+              {/* Pulse ring */}
+              <circle cx={x} cy={y} r="6" fill={conflict.color} opacity="0.3">
+                <animate
+                  attributeName="r"
+                  from="6"
+                  to="20"
+                  dur="2s"
+                  repeatCount="indefinite"
                 />
-              </g>
-            </Link>
-          )
-        })}
+                <animate
+                  attributeName="opacity"
+                  from="0.5"
+                  to="0"
+                  dur="2s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+              {/* Core dot */}
+              <circle
+                cx={x}
+                cy={y}
+                r={hovered?.conflict.id === conflict.id ? 7 : 5}
+                fill={conflict.color}
+                style={{ transition: 'r 0.2s ease' }}
+              />
+            </g>
+          </Link>
+        ))}
       </svg>
+
+      {/* Custom tooltip */}
+      {hovered && (() => {
+        const pos = getScreenCoords(hovered.x, hovered.y)
+        return (
+          <div
+            className="absolute z-50 pointer-events-none"
+            style={{
+              left: pos.left,
+              top: pos.top,
+              transform: 'translate(-50%, -100%) translateY(-14px)',
+            }}
+          >
+            <div
+              className="px-3 py-2 rounded shadow-lg text-center whitespace-nowrap"
+              style={{
+                background: 'rgba(17, 17, 17, 0.92)',
+                backdropFilter: 'blur(4px)',
+              }}
+            >
+              <p className="text-white text-xs font-semibold font-sans leading-tight">
+                {hovered.conflict.name}
+              </p>
+              <p className="text-gray-300 text-[10px] font-sans mt-0.5">
+                {intensityLabels[hovered.conflict.intensity] ?? hovered.conflict.intensity}
+                {hovered.conflict.region && ` · ${hovered.conflict.region}`}
+              </p>
+            </div>
+            {/* Arrow */}
+            <div
+              className="mx-auto w-0 h-0"
+              style={{
+                borderLeft: '5px solid transparent',
+                borderRight: '5px solid transparent',
+                borderTop: '5px solid rgba(17, 17, 17, 0.92)',
+                width: 0,
+                margin: '0 auto',
+              }}
+            />
+          </div>
+        )
+      })()}
     </div>
   )
 }

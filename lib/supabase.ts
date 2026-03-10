@@ -21,6 +21,18 @@ export type Conflict = {
   active: boolean
   keywords: string[]
   updated_at: string
+  summary: string | null
+  key_facts: KeyFacts | null
+  last_summary_update: string | null
+}
+
+export type KeyFacts = {
+  parties: string[]
+  startDate: string
+  region: string
+  estimatedCasualties: string
+  internationalActors: string[]
+  latestDevelopment: string
 }
 
 export type Source = {
@@ -41,6 +53,24 @@ export type NewsItem = {
   url: string
   published_at: string
   fetched_at: string
+  curated: boolean
   sources?: Source
   conflicts?: Conflict
+}
+
+export type Article = {
+  id: string
+  conflict_id: string
+  title: string
+  subtitle: string | null
+  body: string
+  sources: string[]
+  published_at: string
+  slug: string
+  conflicts?: {
+    name: string
+    color: string
+    slug: string
+    intensity: string
+  }
 }

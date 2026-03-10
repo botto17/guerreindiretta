@@ -1,10 +1,15 @@
 'use client'
 
-import { NewsItem } from '@/lib/supabase'
 import Link from 'next/link'
 
+type TickerArticle = {
+  id: string
+  title: string
+  slug: string
+}
+
 type Props = {
-  items: NewsItem[]
+  items: TickerArticle[]
 }
 
 export default function NewsTicker({ items }: Props) {
@@ -13,10 +18,10 @@ export default function NewsTicker({ items }: Props) {
   const doubled = [...items, ...items]
 
   return (
-    <div className="bg-accent text-white overflow-hidden h-8 flex items-center">
-      <div className="flex-shrink-0 bg-navy px-3 h-full flex items-center z-10">
-        <span className="text-xs font-sans font-semibold uppercase tracking-widest whitespace-nowrap">
-          Breaking
+    <div className="bg-white border-y border-gray-200 text-gray-700 overflow-hidden h-8 flex items-center">
+      <div className="flex-shrink-0 border-r border-gray-200 px-4 h-full flex items-center">
+        <span className="text-[10px] font-sans font-semibold uppercase tracking-[0.2em] text-accent whitespace-nowrap">
+          Ultimi articoli
         </span>
       </div>
       <div className="overflow-hidden flex-1">
@@ -24,12 +29,10 @@ export default function NewsTicker({ items }: Props) {
           {doubled.map((item, i) => (
             <Link
               key={`${item.id}-${i}`}
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-sans hover:underline flex-shrink-0"
+              href={`/articoli/${item.slug}`}
+              className="text-xs font-sans text-gray-600 hover:text-accent transition-colors flex-shrink-0"
             >
-              <span className="opacity-70 mr-2">◆</span>
+              <span className="text-gray-300 mr-2">◆</span>
               {item.title}
             </Link>
           ))}

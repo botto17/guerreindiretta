@@ -2,37 +2,45 @@ import Link from 'next/link'
 
 export default function Header() {
   return (
-    <header className="bg-navy text-white">
+    <header className="bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-2 h-8 bg-accent" />
-            <span className="font-serif text-xl font-bold uppercase tracking-widest text-white">
-              Guerre Indiretta
-            </span>
+        {/* Title */}
+        <div className="py-6 text-center">
+          <Link href="/">
+            <h1
+              className="text-4xl md:text-5xl font-black tracking-tight text-gray-900"
+              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+            >
+              GuerreInDiretta
+            </h1>
           </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            {[
-              { href: '/#mappa', label: 'Mappa' },
-              { href: '/conflitti', label: 'Conflitti' },
-              { href: '/fonti', label: 'Fonti' },
-              { href: '/about', label: 'About' },
-            ].map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="text-sm font-sans text-gray-300 hover:text-white transition-colors uppercase tracking-wide"
-              >
-                {label}
-              </Link>
-            ))}
-          </nav>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            <span className="text-xs text-gray-400 font-sans">Live</span>
-          </div>
         </div>
+
+        {/* Red line */}
+        <div className="h-[2px] bg-accent" />
+
+        {/* Nav */}
+        <nav className="flex items-center justify-center gap-8 py-3">
+          {[
+            { href: '/#mappa', label: 'Mappa' },
+            { href: '/conflitti', label: 'Conflitti' },
+            { href: '/articoli', label: 'Articoli' },
+            { href: '/fonti', label: 'Fonti' },
+            { href: '/about', label: 'About' },
+          ].map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className="text-xs font-sans text-gray-500 hover:text-accent transition-colors uppercase tracking-widest"
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
       </div>
+
+      {/* Bottom border */}
+      <div className="border-b border-gray-200" />
     </header>
   )
 }
